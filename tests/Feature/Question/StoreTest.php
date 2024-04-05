@@ -38,7 +38,7 @@
 
     
         assertDatabaseCount('questions', 1);
-        assertDatabaseHas('questions', [
+        assertDatabaseHas('questions', [ 
             'question' => 'Lorem ipsum teste?',
             'user_id' => $user->id,
             'status' => 'draft'
@@ -64,6 +64,18 @@
                 'question' => 'Question without a question mark'
             ]))->assertJsonValidationErrors([
                 'question' => 'are you sure that is a question? It is missing a question mark'
+            ]);
+        });
+
+        test('question::min characters should be 10', function(){
+            // $this->withoutExceptionHandling();
+            $user = User::factory()->create();
+            Sanctum::actingAs($user);
+
+            postJson(route('questions.store', [
+                'question' => 'min?'
+            ]))->assertJsonValidationErrors([
+                'question' => 'The question field must be at least 10 characters.'
             ]);
         });
     });

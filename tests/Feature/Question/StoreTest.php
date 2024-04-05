@@ -42,6 +42,17 @@
             'user_id' => $user->id,
             'status' => 'draft'
         ]);
-});
+    });
+
+    describe('validation rules', function() {
+        test('question::required', function(){
+            $user = User::factory()->create();
+            Sanctum::actingAs($user);
+
+            postJson(route('questions.store', []))->assertJsonValidationErrors([
+                'question' => 'required'
+            ]);
+        });
+    });
 
 ?>

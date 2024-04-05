@@ -78,6 +78,22 @@
                 'question' => 'The question field must be at least 10 characters.'
             ]);
         });
+
+        test('question::should be unique', function(){
+            // $this->withoutExceptionHandling();
+            $user = User::factory()->create();
+            Question::create([
+                'question' => 'Lorem ipsum teste?', 
+                'user_id' => $user->id, 
+                'status' => 'draft']);
+            Sanctum::actingAs($user);
+
+            postJson(route('questions.store', [
+                'question' => 'Lorem ipsum teste?'
+            ]))->assertJsonValidationErrors([
+                'question' => 'The question has already been taken.'
+            ]);
+        });
     });
 
 ?>

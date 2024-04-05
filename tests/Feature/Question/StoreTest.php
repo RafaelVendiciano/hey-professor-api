@@ -1,5 +1,6 @@
 <?php
 
+    use App\Rules\WithQuestionMark;
     use App\Models\User;
     use App\Models\Question;
     use function Pest\Laravel\assertDatabaseCount;
@@ -51,6 +52,18 @@
 
             postJson(route('questions.store', []))->assertJsonValidationErrors([
                 'question' => 'required'
+            ]);
+        });
+
+        test('question::ending-with-question-mark', function(){
+            // $this->withoutExceptionHandling();
+            $user = User::factory()->create();
+            Sanctum::actingAs($user);
+
+            postJson(route('questions.store', [
+                'question' => 'Question without a question mark'
+            ]))->assertJsonValidationErrors([
+                'question' => 'are you sure that is a question? It is missing a question mark'
             ]);
         });
     });

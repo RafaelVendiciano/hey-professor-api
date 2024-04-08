@@ -6,6 +6,8 @@
     use function Pest\Laravel\assertDatabaseCount;
     use function Pest\Laravel\assertDatabaseHas;
     use function Pest\Laravel\postJson;
+use function PHPUnit\Framework\assertJson;
+
     use Laravel\Sanctum\Sanctum;
 
     it('should be able to store a new question', function(){
@@ -26,7 +28,7 @@
             ]);
     });
 
-    test('after creating a new question, i need to make sure it creates on _draft_ status', function(){
+    test('with the creation of a question, we need to make sure it creates with status _draft_', function(){
         //$this->withoutExceptionHandling();
 
         $user = User::factory()->create();
@@ -96,4 +98,23 @@
         });
     });
 
+    test('after creating we should return a status 201 with the created question', function() {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $request = postJson(route('questions.store', [
+            'question' => 'Lorem ipsum teste?'
+        ]))->assertCreated();
+
+        $question = Question::latest()->first();
+        
+        $request->assertJson([
+            'data' => [
+                'id' => $question->id,
+                'question' => $question->question,
+                'status' => $question->status,
+                'created_at' => $question->created_at->format('Y-m-d'),
+                'updated_at' => $question->updated_at->format('Y-m-d')
+            ]]);
+    });
 ?>

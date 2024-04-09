@@ -6,7 +6,7 @@
     use function Pest\Laravel\assertDatabaseCount;
     use function Pest\Laravel\assertDatabaseHas;
     use function Pest\Laravel\postJson;
-use function PHPUnit\Framework\assertJson;
+    use function PHPUnit\Framework\assertJson;
 
     use Laravel\Sanctum\Sanctum;
 

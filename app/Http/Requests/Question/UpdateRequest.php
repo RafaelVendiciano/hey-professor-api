@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Question;
 
 use App\Rules\WithQuestionMark;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -23,10 +24,14 @@ class UpdateRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
+    public function rules(): array{
+
         return [
-            'question' => ['required', new WithQuestionMark(), 'min:10', 'unique:questions']
+            'question' => ['required', 
+                           new WithQuestionMark(), 
+                           'min:10', 
+                           Rule::unique('questions')->ignore($this->route()->question->id)
+                           ]
         ];
     }
 }

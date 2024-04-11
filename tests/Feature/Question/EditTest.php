@@ -85,6 +85,20 @@
             ])->assertOk();
         });
 
+        test('question::should be able to be edited only if status is draft', function(){
+
+            // $this->withoutExceptionHandling();
+            $user = User::factory()->create();
+            $question = Question::factory()->create(['user_id'=> $user->id, 'status' => 'publish']);
+            Sanctum::actingAs($user);
+
+            putJson(route('questions.update', $question), [
+                'question' => 'Lorem ipsum test?'
+            ])->assertJsonValidationErrors([
+                'question' => 'only draft questions can be edited'
+            ]);
+        });
+
     });
 
     describe('security', function() {

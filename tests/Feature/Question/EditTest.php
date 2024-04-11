@@ -43,7 +43,7 @@
 
         test('question::ending-with-question-mark', function(){
 
-            // $this->withoutExceptionHandling();
+            //$this->withoutExceptionHandling();
             $user = User::factory()->create();
             $question = Question::factory()->create(['user_id'=> $user->id]);
             Sanctum::actingAs($user);
@@ -83,6 +83,27 @@
             putJson(route('questions.update', $question), [
                 'question' => 'Lorem ipsum test?'
             ])->assertOk();
+        });
+
+    });
+
+    describe('security', function() {
+
+        test('only the person who create the question can update the same question', function(){
+
+            $user1 = User::factory()->create();
+            $user2 = User::factory()->create();
+            $question = Question::factory()->create(['user_id'=> $user1->id]);
+            Sanctum::actingAs($user2);
+            
+            putJson(route('questions.update', $question), [
+                'question' => 'trying to update question?'
+            ])->assertForbidden();  
+             
+            assertDatabaseHas('questions', [
+                'id' => $question->id,
+                'question' => $question->question,
+            ]);
         });
 
     });

@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Question;
 
+use App\Models\Question;
 use App\Rules\WithQuestionMark;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -16,7 +18,10 @@ class UpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        /** @var Question $question */
+        $question = $this->route()->question;
+
+        return Gate::allows('update', $question);
     }
 
     /**

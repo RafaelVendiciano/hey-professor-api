@@ -122,4 +122,30 @@
 
     });
 
+    test('after updating we should return a status 200 with the updated question', function() {
+        $user = User::factory()->create();
+        $question = Question::factory()->create(['user_id'=> $user->id]);
+        Sanctum::actingAs($user);
+
+        $request = putJson(route('questions.update', $question), [
+            'question' => 'trying to update question?'
+        ])->assertOk(); 
+
+
+        $question = Question::latest()->first();
+        
+        $request->assertJson([
+            'data' => [
+                'id' => $question->id,
+                'question' => $question->question,
+                'status' => $question->status,
+                'created_by' => [
+                    'id' => $user->id,
+                    'name' => $user->name
+                ],
+                'created_at' => $question->created_at->format('Y-m-d h:i:s'),
+                'updated_at' => $question->updated_at->format('Y-m-d h:i:s')
+            ]]);
+    });
+
 ?>

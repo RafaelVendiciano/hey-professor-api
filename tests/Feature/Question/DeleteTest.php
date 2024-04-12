@@ -14,7 +14,7 @@
 
     it('should be able to delete a question', function(){
 
-            $this->withoutExceptionHandling();
+            // $this->withoutExceptionHandling();
             $user = User::factory()->create();
             $question = Question::factory()->create(['user_id'=> $user->id]);
             Sanctum::actingAs($user);
@@ -25,5 +25,20 @@
                 'id' => $question->id
             ]);
     });
+
+    test('only the creator of a question can delete it', function(){
+
+       //  $this->withoutExceptionHandling();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $question = Question::factory()->create(['user_id'=> $user1->id]);
+        Sanctum::actingAs($user2);
+
+        deleteJson(route('questions.destroy', $question))->assertForbidden();
+
+        assertDatabaseHas('questions', [
+            'id' => $question->id
+        ]);
+});
 
 ?>

@@ -51,9 +51,9 @@ class QuestionPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Question $question): void
+    public function restore(User $user, Question $question): bool
     {
-        //
+        return $user->is($question->user);
     }
 
     /**

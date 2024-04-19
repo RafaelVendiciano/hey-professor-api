@@ -9,25 +9,41 @@
     use Laravel\Sanctum\Sanctum;
     
 
-    it('should be able to register an user in the application', function(){
+    it('should be able to register in the application', function () {
+        postJson(route('register'), [
+            'name'               => 'John Doe',
+            'email'              => 'joe@doe.com',
+            'password'           => 'password'
+        ])->assertOk();
 
-            //$this->withoutExceptionHandling();
+        assertDatabaseHas('users', [
+            'name'  => 'John Doe',
+            'email' => 'joe@doe.com',
+        ]);
+    
+        $joeDoe = User::whereEmail('joe@doe.com')->first();
+    
+        assertTrue(
+            Hash::check('password', $joeDoe->password)
+        );
+    });
 
-            postJson(route('register'), [
-                'name' => 'John Doe',
-                'email' => 'joe@doe.com',
-                'password' => 'password'
-            ])->assertSessionHasNoErrors();
+    describe('validations', function () {
 
-            assertDatabaseHas('users', [
-                'name' => 'John Doe',
-                'email' => 'joe@doe.com'
-            ]);
-            
-            $joeDoe = User::where('email', 'joe@doe.com')->first();
-
-            assertTrue(Hash::check('password', $joeDoe->password));
-
+        test('name', function ($rule, $value, $meta = []) {
+            postJson(route('register'), ['name' => $value])
+                ->assertJsonValidationErrors([
+                    'name' => __(
+                        'validation.' . $rule,
+                        array_merge(['attribute' => 'name'], $meta)
+                    ),
+                ]);
+        })->with([
+            'required' => ['required', ''],
+            'min:3'    => ['min', 'AB', ['min' => 3]],
+            'max:255'  => ['max', str_repeat('*', 256), ['max' => 255]],
+        ]);
+    
     });
 
 ?>

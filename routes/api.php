@@ -11,13 +11,14 @@ Route::get('/test', function (Request $request) {
     return 'working';
 });
 
+Route::post('logout', Auth\LogoutController::class)->middleware(['web', 'auth'])->name('logout');
+
 Route::middleware(['guest', 'web'])->group(function() {
 
-    Route::post('login', Auth\LoginController::class)->name('login');
     Route::post('register', Auth\RegisterController::class)->name('register');
-
+    Route::post('login', Auth\LoginController::class)->name('login');
+    
 });
-
 
 Route::middleware('auth:sanctum')->group(function () {
     // Users

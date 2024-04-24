@@ -17,8 +17,13 @@ class LoginController extends Controller
         //     'password '=> ['required']
         // ]);
 
-        if(!auth()->attempt($request->only('email', 'password'))) {
-            
+        $data = request()->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        if(!auth()->attempt($data)) {
+
             throw ValidationException::withMessages([
                 'email' => __('auth.failed')
             ]);

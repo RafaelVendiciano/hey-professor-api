@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', fn (Request $request) => $request->user());
 
     // Questions
+    Route::get('my-questions/{status}', Question\MyQuestionsController::class)->name('my-questions');
     Route::get('questions', Question\IndexController::class)->name('questions.index');
     Route::post('questions', Question\StoreController::class)->name('questions.store');
     Route::put('questions/{question}', Question\UpdateController::class)->name('questions.update');

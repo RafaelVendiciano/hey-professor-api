@@ -15,12 +15,30 @@ class QuestionFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'question' => fake()->realText(15) . '?',
             'status' => 'draft',
             'user_id' => User::factory()
         ];
     }
+
+    public function published(): self {
+
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => 'published'
+            ];
+        });
+    }
+
+    public function draft(): self {
+
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => 'draft'
+            ];
+        });
+    }
+
 }

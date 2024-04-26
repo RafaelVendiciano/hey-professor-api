@@ -41,4 +41,13 @@ class QuestionFactory extends Factory
         });
     }
 
+    public function archived(): self {
+
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => $this->faker->dateTime()
+            ];
+        });
+    }
+
 }

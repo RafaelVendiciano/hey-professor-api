@@ -6,6 +6,7 @@ use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\QuestionResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 
 class MyQuestionsController extends Controller
@@ -15,7 +16,7 @@ class MyQuestionsController extends Controller
      */
     public function __invoke(Request $request) {
         
-        $user_id = auth()->user()->id;
+        $user_id = user()->id;
 
         $status = request()->status;
 
@@ -26,7 +27,10 @@ class MyQuestionsController extends Controller
         
         $questions = Question::query()
         ->where('user_id', $user_id)
-        ->where('status',  $status)
+        ->when($status == 'archived', 
+               fn(Builder $question) => $question->onlyTrashed(),
+               fn(Builder $question) => $question->where('status',  $status)
+               )
         ->get();
 
         return QuestionResource::collection($questions);

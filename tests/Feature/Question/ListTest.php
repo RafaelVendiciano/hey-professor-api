@@ -8,11 +8,11 @@ use function Pest\Laravel\getJson;
 
     it('should be able to list only published questions', function() {
 
+        // $this->withoutExceptionHandling();
         Sanctum::actingAs(User::factory()->create());
 
         $published =  Question::factory()->published()->create();
         $draft = Question::factory()->draft()->create();
-
 
         $request = getJson(route('questions.index'))->assertOk();
 
@@ -29,6 +29,27 @@ use function Pest\Laravel\getJson;
             ])->assertJsonMissing([
                 'question' => $draft->question
             ]);
+
+    });
+
+    it('should be able to search for a question', function() {
+
+        Sanctum::actingAs(User::factory()->create());
+
+        $firstPublished =  Question::factory()->published()->create(['question' => 'First Question?']);
+        $secondPublished =  Question::factory()->published()->create(['question' => 'Second Question?']);
+
+        $requestFirst = getJson(route('questions.index', ['q' => 'first']));
+
+        $requestFirst->assertOk()
+        ->assertJsonFragment(['question' => $firstPublished->question])
+        ->assertJsonMissing(['question' => $secondPublished->question]);
+
+        $requestSecond = getJson(route('questions.index', ['q' => 'second']));
+
+        $requestSecond->assertOk()
+        ->assertJsonFragment(['question' => $secondPublished->question])
+        ->assertJsonMissing(['question' => $firstPublished->question]);
 
     });
 

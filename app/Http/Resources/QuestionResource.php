@@ -26,6 +26,8 @@ class QuestionResource extends JsonResource
                 'id' => $this->user->id,
                 'name' => $this->user->name
             ],
+            'votes_sum_like' => $this->votes_sum_like ?: 0,
+            'votes_sum_dislike' => $this->votes_sum_dislike ?: 0,
             'created_at' => $this->created_at->format('Y-m-d h:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d h:i:s')
 
